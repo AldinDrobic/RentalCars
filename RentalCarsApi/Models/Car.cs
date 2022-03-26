@@ -14,6 +14,6 @@ namespace RentalCarsApi.Models
         [Required]
         public bool IsRented { get; set; }
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }
