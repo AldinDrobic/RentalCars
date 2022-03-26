@@ -64,4 +64,5 @@ namespace RentalCarsApi.Controllers
             return CreatedAtAction("GetPrice", new {id = price.Id}, price);
         }
     }
+
 }
