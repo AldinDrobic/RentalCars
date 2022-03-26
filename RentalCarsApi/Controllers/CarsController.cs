@@ -42,9 +42,7 @@ namespace RentalCarsApi.Controllers
             var car = await _context.Cars.FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
-            {
                 return NotFound();
-            }
 
             return Ok(car);
         }
@@ -52,7 +50,7 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create new car 
         /// </summary>
-        /// <param name="car">Car class that is used for creating car object</param>
+        /// <param name="car">Car class that is used for creating new car object</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> CreateCar(Car car)
