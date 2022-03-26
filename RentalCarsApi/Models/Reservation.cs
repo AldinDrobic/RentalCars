@@ -8,6 +8,6 @@
         public DateTime TimeDateRental { get; set; }
         public DateTime TimeDateReturn{ get; set; }
         public int CarId { get; set; }
-        public Car car { get; set; }
+        public Car Car { get; set; }
     }
 }
