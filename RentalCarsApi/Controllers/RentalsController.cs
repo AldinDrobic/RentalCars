@@ -6,6 +6,8 @@ using RentalCarsApi.Models;
 
 namespace RentalCarsApi.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class RentalsController: ControllerBase
     {
         private readonly RentalCarsDbContext _context;
@@ -24,7 +26,9 @@ namespace RentalCarsApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Rental>>> GetRentals()
         {
-            var rentals = await _context.Rentals.ToListAsync();
+            var rentals = await _context.Rentals
+                .Include(r => r.Car)
+                .ToListAsync();
 
             return Ok(rentals);
         }
@@ -37,7 +41,9 @@ namespace RentalCarsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Rental>> GetRental(int id)
         {
-            var rental = await _context.Rentals.FindAsync(id);
+            var rental = await _context.Rentals
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             if (rental == null)
                 return NotFound();

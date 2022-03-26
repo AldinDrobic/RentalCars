@@ -26,7 +26,9 @@ namespace RentalCarsApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Reservation>>> GetReservations()
         {
-            var reservations = await _context.Reservations.ToListAsync();
+            var reservations = await _context.Reservations
+                .Include(r => r.Car)
+                .ToListAsync();
 
             return Ok(reservations);
         }
@@ -39,7 +41,9 @@ namespace RentalCarsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
-            var reservations = await _context.Reservations.FindAsync(id);
+            var reservations = await _context.Reservations
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             if (reservations == null)
                 return NotFound();
