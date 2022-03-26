@@ -9,7 +9,6 @@ namespace RentalCarsApi.Models
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
-        public double? Price { get; set; }
     }
 }
 
