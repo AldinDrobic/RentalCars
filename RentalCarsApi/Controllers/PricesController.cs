@@ -27,7 +27,7 @@ namespace RentalCarsApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PriceReadDTO>>> GetPrices()
         {
-            var prices = _mapper.Map<List<PriceReadDTO>->(await _context.Prices.ToListAsync());
+            var prices = _mapper.Map<List<PriceReadDTO>>(await _context.Prices.ToListAsync());
 
             return Ok(prices);
         }
