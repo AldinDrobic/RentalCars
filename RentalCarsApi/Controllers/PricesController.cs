@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Price;
 
 namespace RentalCarsApi.Controllers
 {
@@ -24,9 +25,9 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Price>>> GetPrices()
+        public async Task<ActionResult<List<PriceReadDTO>>> GetPrices()
         {
-            var prices = await _context.Prices.ToListAsync();
+            var prices = _mapper.Map<List<PriceReadDTO>->(await _context.Prices.ToListAsync());
 
             return Ok(prices);
         }
@@ -37,14 +38,14 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Price>> GetPrice(int id)
+        public async Task<ActionResult<PriceReadDTO>> GetPrice(int id)
         {
             var price = await _context.Prices.FindAsync(id);
 
             if (price == null)
                 return BadRequest();
 
-            return Ok(price);
+            return Ok(_mapper.Map<PriceReadDTO>(price));
         }
 
         /// <summary>
@@ -53,15 +54,16 @@ namespace RentalCarsApi.Controllers
         /// <param name="price">Price class that is used for creating new price object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> CreatePrice(Price price)
+        public async Task<ActionResult<PriceReadDTO>> CreatePrice(PriceCreateDTO dtoPrice)
         {
-            if (price == null)
+            if (dtoPrice == null)
                 return BadRequest();
+            Price domainPrice = _mapper.Map<Price>(dtoPrice);
 
-            await _context.Prices.AddAsync(price);
+            await _context.Prices.AddAsync(domainPrice);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPrice", new {id = price.Id}, price);
+            return CreatedAtAction("GetPrice", new {id = domainPrice.Id}, _mapper.Map<PriceReadDTO>(domainPrice));
         }
     }
 
