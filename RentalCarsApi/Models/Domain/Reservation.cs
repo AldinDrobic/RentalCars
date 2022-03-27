@@ -22,7 +22,7 @@ namespace RentalCarsApi.Models
             ErrorMessage = "Wrong format for date, use YYMMDD instead ")]
         public string TimeDateReturn { get; set; }
         public int CarId { get; set; }
-        public Car? Car { get; set; }
+        public Car Car { get; set; }
 
     }
 }

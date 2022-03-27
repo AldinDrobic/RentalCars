@@ -105,6 +105,19 @@ namespace RentalCarsApi.Controllers
                 _mapper.Map<CarReadDTO>(domainCar));
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCar(int id)
+        {
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+                return NotFound();
+
+            _context.Cars.Remove(car);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         private bool CarExists(int id)
         {
             return _context.Cars.Any(e => e.Id == id);
