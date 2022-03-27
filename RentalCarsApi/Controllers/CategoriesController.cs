@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Category;
 
 namespace RentalCarsApi.Controllers
 {
@@ -24,9 +25,9 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetCategories()
+        public async Task<ActionResult<List<CategoryReadDTO>>> GetCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = _mapper.Map<List<CategoryReadDTO>>(await _context.Categories.ToListAsync());
 
             return Ok(categories);
         }
@@ -37,14 +38,14 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public async Task<ActionResult<CategoryReadDTO>> GetCategory(int id)
         {
             var category = await _context.Categories.FindAsync(id);
 
             if (category == null)
                 return NotFound();
 
-            return Ok(category);
+            return Ok(_mapper.Map<CategoryReadDTO>(category));
         }
 
         /// <summary>
@@ -53,15 +54,16 @@ namespace RentalCarsApi.Controllers
         /// <param name="category">Category class that is used for creating new category object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory(Category category)
+        public async Task<ActionResult<CategoryReadDTO>> CreateCategory(CategoryCreateDTO dtoCategory)
         {
-            if (category == null)
+            if (dtoCategory == null)
                 return BadRequest();
+            Category domainCategory = _mapper.Map<Category>(dtoCategory);
 
-            await _context.Categories.AddAsync(category);
+            await _context.Categories.AddAsync(domainCategory);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategory", new {id = category.Id}, category);
+            return CreatedAtAction("GetCategory", new {id = domainCategory.Id}, _mapper.Map<CategoryReadDTO>(domainCategory));
         }
 
     }

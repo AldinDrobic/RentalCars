@@ -8,6 +8,6 @@
         public string CustomerBirth { get; set; }
         public string TimeDateRental { get; set; }
         public string TimeDateReturn { get; set; }
-        public int Car { get; set; }
+        public int CarId { get; set; }
     }
 }

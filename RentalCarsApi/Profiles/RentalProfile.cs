@@ -8,12 +8,12 @@ namespace RentalCarsApi.Profiles
         public RentalProfile()
         {
             CreateMap<Rental, RentalReadDTO>()
-                .ForMember(rdto => rdto.Car, opt => opt
+                .ForMember(rdto => rdto.CarId, opt => opt
                 .MapFrom(r => r.CarId))
                 .ReverseMap();
 
             CreateMap<Rental, RentalCreateDTO>()
-                .ForMember(rdto => rdto.Car, opt => opt
+                .ForMember(rdto => rdto.CarId, opt => opt
                 .MapFrom(c => c.CarId))
                 .ReverseMap();
         }
