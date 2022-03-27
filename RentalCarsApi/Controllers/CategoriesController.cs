@@ -51,7 +51,7 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create a new category
         /// </summary>
-        /// <param name="category">Category class that is used for creating new category object</param>
+        /// <param name="dtoCategory">Category class that is used for creating new category object</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<CategoryReadDTO>> CreateCategory(CategoryCreateDTO dtoCategory)

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Reservation;
 
 namespace RentalCarsApi.Controllers
 {
@@ -24,14 +25,15 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Reservation>>> GetReservations()
+        public async Task<ActionResult<List<ReservationReadDTO>>> GetReservations()
         {
-            var reservations = await _context.Reservations
+            var reservations = _mapper.Map<List<ReservationReadDTO>>(await _context.Reservations
                 .Include(r => r.Car)
-                .ToListAsync();
+                .ToListAsync());
 
             return Ok(reservations);
         }
+
 
         /// <summary>
         /// Get specific reserveation by id
@@ -39,11 +41,11 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Reservation>> GetReservation(int id)
+        public async Task<ActionResult<ReservationReadDTO>> GetReservation(int id)
         {
-            var reservations = await _context.Reservations
+            var reservations = _mapper.Map<List<ReservationReadDTO>>(await _context.Reservations
                 .Include(r => r.Car)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.Id == id));
 
             if (reservations == null)
                 return NotFound();
@@ -54,18 +56,19 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create new reservation
         /// </summary>
-        /// <param name="reservation">Reservation class that is used for creating new reservation object</param>
+        /// <param name="dtoReservation">reservation>Reservation class that is used for creating new reservation object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Reservation>> CreateReservation(Reservation reservation)
+        public async Task<ActionResult<ReservationReadDTO>> CreateReservation(ReservationCreateDTO dtoReservation)
         {
-            if (reservation == null)
+            if (dtoReservation == null)
                 return BadRequest();
+            Reservation domainReservation = _mapper.Map<Reservation>(dtoReservation);
 
-            await _context.Reservations.AddAsync(reservation);
+            await _context.Reservations.AddAsync(domainReservation);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReservation", new {id = reservation.Id}, reservation);
+            return CreatedAtAction("GetReservation", new {id = domainReservation.Id}, _mapper.Map<Reservation>(domainReservation));
         }
 
 

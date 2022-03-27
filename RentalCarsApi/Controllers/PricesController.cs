@@ -51,7 +51,7 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create new price
         /// </summary>
-        /// <param name="price">Price class that is used for creating new price object</param>
+        /// <param name="dtoPrice">Price class that is used for creating new price object</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<PriceReadDTO>> CreatePrice(PriceCreateDTO dtoPrice)
