@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RentalCarsApi.Models;
+﻿using RentalCarsApi.Models;
 
-namespace RentalCarsApi.Services
+namespace RentalCarsApi.Services.CarServices
 {
     public interface ICarService
     {

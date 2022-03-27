@@ -25,7 +25,7 @@ namespace RentalCarsApi.Controllers
         }
 
         /// <summary>
-        /// Get a list of all categories
+        /// Get a list of all reservations
         /// </summary>
         /// <returns></returns>
         [HttpGet]

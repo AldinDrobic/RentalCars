@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Services.CarServices;
 
 namespace RentalCarsApi.Services
 {
@@ -124,6 +124,7 @@ namespace RentalCarsApi.Services
             try
             {
                 await _context.Cars.AddAsync(car);
+                await SaveDatabase();
             }
             catch (Exception)
             {
@@ -173,7 +174,7 @@ namespace RentalCarsApi.Services
             if (!CarExists(id))
                 throw new Exception("Car doesn't exist in the database!");
 
-                _context.Entry(car).State = EntityState.Modified;
+            _context.Entry(car).State = EntityState.Modified;
             await SaveDatabase();
         }
     }

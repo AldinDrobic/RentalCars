@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Car;
-using RentalCarsApi.Services;
+using RentalCarsApi.Services.CarServices;
+using RentalCarsApi.Services.ReservationServices;
 
 namespace RentalCarsApi.Controllers
 {
@@ -11,12 +12,15 @@ namespace RentalCarsApi.Controllers
     public class CarsVController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly IReservationService _reservationService;
         private readonly ICarService _carService;
 
-        public CarsVController(IMapper mapper, ICarService carService)
+        public CarsVController(IMapper mapper,ICarService carService, IReservationService reservationService)
         {
             _mapper = mapper;
             _carService = carService;
+            _reservationService = reservationService;
+
         }
 
         /// <summary>
@@ -37,8 +41,7 @@ namespace RentalCarsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CarReadDTO>> GetCar(int id)
         {
-            Car car = await _carService.GetCar(id);
-            return Ok(_mapper.Map<CarReadDTO>(car));
+            return Ok(_mapper.Map<CarReadDTO>(await _carService.GetCar(id)));
         }
 
         /// <summary>
