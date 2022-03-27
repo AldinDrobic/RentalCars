@@ -13,11 +13,15 @@ namespace RentalCarsApi.Controllers
     {
         private readonly RentalCarsDbContext _context;
         private readonly IMapper _mapper;
+        private readonly RentalsController _rentalsController;
+        private readonly ReservationsController _reservationsController;
 
-        public CarsController(RentalCarsDbContext context, IMapper mapper)
+        public CarsController(RentalCarsDbContext context, IMapper mapper, RentalsController rentalsController, ReservationsController reservationsController)
         {
             _context = context;
             _mapper = mapper;
+            _rentalsController = rentalsController;
+            _reservationsController = reservationsController;
         }
 
         /// <summary>
@@ -112,12 +116,23 @@ namespace RentalCarsApi.Controllers
             if (car == null)
                 return NotFound();
 
+            //Delete car rental
+            await _rentalsController.DeleteRentalByCarId(car.Id);
+
+            //Delete car reservation
+            await _reservationsController.DeleteReservationByCarId(car.Id);
+
             _context.Cars.Remove(car);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
+        }       
 
+        /// <summary>
+        /// Return bool based on if car exists or not
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private bool CarExists(int id)
         {
             return _context.Cars.Any(e => e.Id == id);

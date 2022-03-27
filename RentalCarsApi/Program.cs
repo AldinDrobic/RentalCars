@@ -3,6 +3,9 @@ using Microsoft.OpenApi.Models;
 using RentalCarsApi.Data;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using RentalCarsApi.Controllers;
+using Microsoft.Extensions.DependencyInjection;
+using RentalCarsApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +17,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<RentalCarsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped(typeof(ICarService), typeof(CarService));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
