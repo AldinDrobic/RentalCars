@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -15,8 +14,7 @@ namespace RentalCarsApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,9 +67,9 @@ namespace RentalCarsApi.Migrations
                     BookingNumber = table.Column<int>(type: "int", nullable: false),
                     RentalPrice = table.Column<double>(type: "float", nullable: false),
                     RentalDays = table.Column<int>(type: "int", nullable: false),
-                    CustomerBirth = table.Column<int>(type: "int", nullable: false),
-                    TimeDateRental = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimeDateReturn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CustomerBirth = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeDateRental = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeDateReturn = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -92,9 +90,9 @@ namespace RentalCarsApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReservationNumber = table.Column<int>(type: "int", nullable: false),
-                    CustomerBirth = table.Column<int>(type: "int", nullable: false),
-                    TimeDateRental = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimeDateReturn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CustomerBirth = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeDateRental = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeDateReturn = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Rental;
 
 namespace RentalCarsApi.Controllers
 {
@@ -24,11 +25,11 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Rental>>> GetRentals()
+        public async Task<ActionResult<IEnumerable<RentalReadDTO>>> GetRentals()
         {
-            var rentals = await _context.Rentals
+            var rentals = _mapper.Map<List<RentalReadDTO>>(await _context.Rentals
                 .Include(r => r.Car)
-                .ToListAsync();
+                .ToListAsync());
 
             return Ok(rentals);
         }
@@ -54,18 +55,20 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create new rental
         /// </summary>
-        /// <param name="rental">Rental class that is used for creating new rental object</param>
+        /// <param name="dtoRental">Rental class that is used for creating new rental object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> CreateRental(Rental rental)
+        public async Task<ActionResult<RentalReadDTO>> CreateRental(RentalCreateDTO dtoRental)
         {
-            if (rental == null)
+            if (dtoRental == null)
                 return BadRequest();
 
-            await _context.Rentals.AddAsync(rental);
+            Rental domainRental = _mapper.Map<Rental>(dtoRental);
+
+            await _context.Rentals.AddAsync(domainRental);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRental", new {id = rental.Id}, rental);
+            return CreatedAtAction("GetRental", new {id = domainRental.Id}, _mapper.Map<RentalReadDTO>(domainRental));
         }
 
     }

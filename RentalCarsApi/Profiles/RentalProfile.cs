@@ -1,0 +1,21 @@
+﻿using AutoMapper;
+using RentalCarsApi.Models.DTO.Rental;
+
+namespace RentalCarsApi.Profiles
+{
+    public class RentalProfile : Profile
+    {
+        public RentalProfile()
+        {
+            CreateMap<Rental, RentalReadDTO>()
+                .ForMember(rdto => rdto.Car, opt => opt
+                .MapFrom(r => r.CarId))
+                .ReverseMap();
+
+            CreateMap<Rental, RentalCreateDTO>()
+                .ForMember(rdto => rdto.Car, opt => opt
+                .MapFrom(c => c.CarId))
+                .ReverseMap();
+        }
+    }
+}

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Car;
 
 namespace RentalCarsApi.Controllers
 {
@@ -24,11 +25,11 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Car>>> GetCars()
+        public async Task<ActionResult<IEnumerable<CarReadDTO>>> GetCars()
         {
-            var cars = await _context.Cars
+            var cars = _mapper.Map<List<CarReadDTO>>(await _context.Cars
                 .Include(c => c.Category)
-                .ToListAsync();
+                .ToListAsync());
 
             return Ok(cars);
         }
@@ -39,7 +40,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
+        public async Task<ActionResult<CarReadDTO>> GetCar(int id)
         {
             var car = await _context.Cars
                 .Include(c => c.Category)
@@ -48,7 +49,7 @@ namespace RentalCarsApi.Controllers
             if (car == null)
                 return NotFound();
 
-            return Ok(car);
+            return Ok(_mapper.Map<CarReadDTO>(car));
         }
 
         /// <summary>
@@ -57,17 +58,21 @@ namespace RentalCarsApi.Controllers
         /// <param name="car">Car class that is used for creating new car object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> CreateCar(Car car)
+        public async Task<ActionResult<CarReadDTO>> CreateCar(CarCreateDTO dtoCar)
         {
-            if (car == null)
+            if (dtoCar == null)
             {
                 return BadRequest();
             }
 
-            await _context.Cars.AddAsync(car);
+            Car domainCar = _mapper.Map<Car>(dtoCar);
+
+            await _context.Cars.AddAsync(domainCar);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCar", new {id = car.Id}, car);
+            return CreatedAtAction("GetCar", 
+                new {id = domainCar.Id}, 
+                _mapper.Map<CarReadDTO>(domainCar));
         }
          
     }
