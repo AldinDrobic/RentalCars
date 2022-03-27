@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Models;
 
 namespace RentalCarsApi
 {
+    [Index(nameof(BookingNumber), IsUnique = true)]
     public class Rental
     {
         [Key]

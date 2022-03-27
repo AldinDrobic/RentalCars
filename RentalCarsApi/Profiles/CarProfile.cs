@@ -19,6 +19,11 @@ namespace RentalCarsApi.Profiles
                 .MapFrom(c => c.CategoryId))
                 .ReverseMap();
 
+            CreateMap<Car, CarEditDTO>()
+                .ForMember(cdto => cdto.CategoryId, opt => opt
+                .MapFrom(c => c.CategoryId))
+                .ReverseMap();
+
         }
     }
 }

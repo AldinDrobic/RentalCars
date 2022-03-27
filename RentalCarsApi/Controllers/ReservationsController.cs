@@ -63,8 +63,12 @@ namespace RentalCarsApi.Controllers
         {
             if (dtoReservation == null)
                 return BadRequest();
+            Car car = await _context.Cars.FindAsync(dtoReservation.CarId);
+            if (car == null)
+                return BadRequest();
+            
             Reservation domainReservation = _mapper.Map<Reservation>(dtoReservation);
-
+            
             await _context.Reservations.AddAsync(domainReservation);
             await _context.SaveChangesAsync();
 

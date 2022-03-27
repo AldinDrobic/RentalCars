@@ -74,6 +74,41 @@ namespace RentalCarsApi.Controllers
                 new {id = domainCar.Id}, 
                 _mapper.Map<CarReadDTO>(domainCar));
         }
-         
+
+        /// <summary>
+        /// Update a specific car by id
+        /// </summary>
+        /// <param name="id">Car objects identifier</param>
+        /// <param name="dtoCar">Car dto object that arrives from body</param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateCar(int id, CarEditDTO dtoCar)
+        {
+            if(id != dtoCar.Id)
+                return BadRequest();
+
+            Car domainCar = _mapper.Map<Car>(dtoCar);
+            _context.Entry(domainCar).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if(!CarExists(id))
+                    return NotFound();
+            }
+
+            return CreatedAtAction("GetCar",
+                new { id = domainCar.Id },
+                _mapper.Map<CarReadDTO>(domainCar));
+        }
+
+        private bool CarExists(int id)
+        {
+            return _context.Cars.Any(e => e.Id == id);
+        }
+
     }
 }
