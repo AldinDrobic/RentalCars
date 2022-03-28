@@ -1,25 +1,26 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RentalCarsApi.Data;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Car;
 using RentalCarsApi.Models.DTO.Reservation;
-using RentalCarsApi.Controllers;
+using RentalCarsApi.Services.CarServices;
+using RentalCarsApi.Services.ReservationServices;
 
 namespace RentalCarsApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class ReservationsController: ControllerBase
-    {      
-        private readonly RentalCarsDbContext _context;
+    [ApiController]
+    public class ReservationsController : ControllerBase
+    {
         private readonly IMapper _mapper;
+        private readonly IReservationService _reservationService;
+        private readonly ICarService _carService;
 
-        public ReservationsController(RentalCarsDbContext context, IMapper mapper)
+        public ReservationsController(IMapper mapper, IReservationService reservationService, ICarService carService)
         {
-            _context = context;
             _mapper = mapper;
+            _reservationService = reservationService;
+            _carService = carService;
         }
 
         /// <summary>
@@ -27,32 +28,9 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<ReservationReadDTO>>> GetReservations()
+        public async Task<ActionResult<IEnumerable<ReservationReadDTO>>> GetReservations()
         {
-            var reservations = _mapper.Map<List<ReservationReadDTO>>(await _context.Reservations
-                .Include(r => r.Car)
-                .ToListAsync());
-
-            return Ok(reservations);
-        }
-
-
-        /// <summary>
-        /// Get specific reserveation by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ReservationReadDTO>> GetReservation(int id)
-        {
-            var reservation = _mapper.Map<ReservationReadDTO>(await _context.Reservations
-                .Include(r => r.Car)
-                .FirstOrDefaultAsync(r => r.Id == id));
-
-            if (reservation == null)
-                return NotFound();
-
-            return Ok(reservation);
+            return Ok(_mapper.Map<List<ReservationReadDTO>>(await _reservationService.GetReservations()));
         }
 
         /// <summary>
@@ -63,15 +41,18 @@ namespace RentalCarsApi.Controllers
         [HttpGet("car/{carId}")]
         public async Task<ActionResult<ReservationReadDTO>> GetReservationByCarId(int carId)
         {
+            return Ok((_mapper.Map<ReservationReadDTO>(await _reservationService.GetReservationByCarId(carId))));
+        }
 
-            var reservation = _mapper.Map<ReservationReadDTO>(await _context.Reservations
-                .Where(r => r.CarId == carId)
-                .FirstOrDefaultAsync());
-
-            if (reservation == null)
-                return NotFound();
-
-            return Ok(reservation);
+        /// <summary>
+        /// Get specific reserveation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ReservationReadDTO>> GetReservationById(int id)
+        {
+            return Ok((_mapper.Map<ReservationReadDTO>(await _reservationService.GetReservationById(id))));
         }
 
         /// <summary>
@@ -84,98 +65,73 @@ namespace RentalCarsApi.Controllers
         {
             if (dtoReservation == null)
                 return BadRequest();
-            if(!CarExists(dtoReservation.CarId))
+            if (!_carService.CarExists(dtoReservation.CarId))
                 return NotFound();
 
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(dtoReservation.CarId));
-            //If car is already rented
-            if(dtoCar.IsRented)
+            Car domainCar = _mapper.Map<Car>(await _carService.GetCar(dtoReservation.CarId));
+            if (domainCar.IsRented)
                 return BadRequest();
 
-            dtoCar.IsRented = true;
+            await _carService.SetCarAvaiability(domainCar);
             Reservation domainReservation = _mapper.Map<Reservation>(dtoReservation);
 
-            try
-            {
-                await _context.Reservations.AddAsync(domainReservation);
-                await _context.SaveChangesAsync();
-                
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-            
-            return CreatedAtAction("GetReservation", new {id = domainReservation.Id}, _mapper.Map<ReservationReadDTO>(domainReservation));
+            await _reservationService.AddReservationToDatabase(domainReservation);
+            await _carService.UpdateCar(dtoReservation.CarId, domainCar);
+
+            return CreatedAtAction("GetReservationById", new { id = domainReservation.Id }, _mapper.Map<ReservationReadDTO>(domainReservation));
         }
 
         /// <summary>
-        /// Delete specific reservation by id
+        /// Deletes a reservation from database by reservation id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("reservationId/{id}")]
         public async Task<IActionResult> DeleteReservationById(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-                return NotFound();
+            //Set car status to available
+            Reservation reservation = await _reservationService.GetReservationById(id);
+            Car car = await _carService.GetCar(reservation.CarId);
+            await _carService.SetCarAvaiability(car);
 
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(reservation.CarId));
-            dtoCar.IsRented = false;
-            _context.Reservations.Remove(reservation);
-
-            try
-            {
-                await _context.SaveChangesAsync();             
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            } 
-
+            //Delete rental
+            await _reservationService.DeleteReservationById(id);
             return NoContent();
         }
 
         /// <summary>
-        /// Delete specific reservation by carId
-        /// </summary>
-        /// <param name="carId"></param>
-        /// <returns></returns>
-        [HttpDelete("car/{id}")]
-        public async Task<IActionResult> DeleteReservationByCarId(int carId)
-        {
-            var reservation = await _context.Reservations
-                .Where(r => r.CarId == carId)
-                .FirstOrDefaultAsync();
-            if (reservation == null)
-                return NotFound();
-
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(reservation.CarId));
-            dtoCar.IsRented = false;
-            _context.Reservations.Remove(reservation);
-            try
-            {
-                await _context.SaveChangesAsync();
-
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Return bool based on if car exists or not
+        /// Deletes a reservation from database by car id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool CarExists(int id)
+        [HttpDelete("carId/{id}")]
+        public async Task<IActionResult> DeleteReservationByCarId(int id)
         {
-            return _context.Cars.Any(e => e.Id == id);
+            //Set car status to available
+            Reservation reservation = await _reservationService.GetReservationByCarId(id);
+            Car car = await _carService.GetCar(reservation.CarId);
+            await _carService.SetCarAvaiability(car);
+
+            //Delete rental
+            await _reservationService.DeleteReservationByCarId(id);
+            return NoContent();
         }
 
+        /// <summary>
+        /// Update a specific reservation by id
+        /// </summary>
+        /// <param name="id">Reservation objects identifier</param>
+        /// <param name="dtoReservation">Reservation dto object that arrives from body</param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateReservation(int id, ReservationEditDTO dtoReservation)
+        {
+            Reservation domainReservation = _mapper.Map<Reservation>(dtoReservation);
+            await _reservationService.UpdateReservation(id, domainReservation);
+
+            return CreatedAtAction("CreateReservation",
+                new { id = domainReservation.Id },
+                _mapper.Map<ReservationReadDTO>(domainReservation));
+        }
     }
 }
