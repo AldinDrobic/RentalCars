@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using RentalCarsApi.Services;
 using RentalCarsApi.Services.CarServices;
 using RentalCarsApi.Services.ReservationServices;
+using RentalCarsApi.Services.CategoryServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<RentalCarsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped(typeof(ICarService), typeof(CarService));
 builder.Services.AddScoped(typeof(IReservationService), typeof(ReservationService));
+builder.Services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo

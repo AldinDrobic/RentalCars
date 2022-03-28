@@ -12,15 +12,12 @@ namespace RentalCarsApi.Controllers
     public class CarsVController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IReservationService _reservationService;
         private readonly ICarService _carService;
 
-        public CarsVController(IMapper mapper,ICarService carService, IReservationService reservationService)
+        public CarsVController(IMapper mapper,ICarService carService)
         {
             _mapper = mapper;
             _carService = carService;
-            _reservationService = reservationService;
-
         }
 
         /// <summary>
@@ -73,8 +70,6 @@ namespace RentalCarsApi.Controllers
             if(!_carService.CarExists(id))
                 return NotFound();
 
-            // Delete reservations
-            // Delete rentals
             await _carService.DeleteCar(id);
 
             return NoContent();
