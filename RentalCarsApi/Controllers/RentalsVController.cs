@@ -88,6 +88,12 @@ namespace RentalCarsApi.Controllers
         [HttpDelete("rentalId/{id}")]
         public async Task<IActionResult> DeleteRentalById(int id)
         {
+            //Set car status to available
+            Rental rental = await _rentalService.GetRentalById(id);
+            Car car = await _carService.GetCar(rental.CarId);
+            await _carService.SetCarAvaiability(car);
+
+            //Delete rental
             await _rentalService.DeleteRentalById(id);
             return NoContent();
         }
@@ -100,6 +106,12 @@ namespace RentalCarsApi.Controllers
         [HttpDelete("carId/{id}")]
         public async Task<IActionResult> DeleteRentalByCarId(int id)
         {
+            //Set car status to available
+            Rental rental = await _rentalService.GetRentalByCarId(id);
+            Car car = await _carService.GetCar(rental.CarId);
+            await _carService.SetCarAvaiability(car);
+
+            //Delete rental
             await _rentalService.DeleteRentalByCarId(id);
             return NoContent();
         }
