@@ -7,6 +7,7 @@ using RentalCarsApi.Services;
 using RentalCarsApi.Services.CarServices;
 using RentalCarsApi.Services.ReservationServices;
 using RentalCarsApi.Services.CategoryServices;
+using RentalCarsApi.Services.RentalServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<RentalCarsDbContext>(options =>
 builder.Services.AddScoped(typeof(ICarService), typeof(CarService));
 builder.Services.AddScoped(typeof(IReservationService), typeof(ReservationService));
 builder.Services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
+builder.Services.AddScoped(typeof(IRentalService), typeof(RentalService));
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo

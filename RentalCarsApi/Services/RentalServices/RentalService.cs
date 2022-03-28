@@ -1,30 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Data;
-using RentalCarsApi.Models;
-using RentalCarsApi.Models.DTO.Car;
 
-namespace RentalCarsApi.Services.ReservationServices
+namespace RentalCarsApi.Services.RentalServices
 {
-    public class ReservationService : IReservationService
+    public class RentalService : IRentalService
     {
         private readonly RentalCarsDbContext _context;
 
-        public ReservationService(RentalCarsDbContext context)
+        public RentalService(RentalCarsDbContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Adds a reservation to the database
+        /// Adds a rental to the database
         /// </summary>
-        /// <param name="reservation"></param>
+        /// <param name="rental"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task AddReservationToDatabase(Reservation reservation)
+        public async Task AddRentalToDatabase(Rental rental)
         {
             try
             {
-                await _context.Reservations.AddAsync(reservation);
+                await _context.Rentals.AddAsync(rental);
                 await SaveDatabase();
             }
             catch (Exception)
@@ -34,112 +32,112 @@ namespace RentalCarsApi.Services.ReservationServices
         }
 
         /// <summary>
-        /// Creates a new reservation and adds it to the database
+        /// Creates a new rental and adds it to the database
         /// </summary>
-        /// <param name="reservation"></param>
+        /// <param name="rental"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Reservation> CreateReservation(Reservation reservation)
+        public async Task<Rental> CreateRental(Rental rental)
         {
-            if (reservation == null)
-                throw new Exception("You need to specify the reservation details!");
+            if (rental == null)
+                throw new Exception("You need to specify the rental details!");
 
-            await AddReservationToDatabase(reservation);
+            await AddRentalToDatabase(rental);
             await SaveDatabase();
 
-            return reservation;
+            return rental;
         }
 
         /// <summary>
-        /// Delete reservation by car id
+        /// Delete rental by car id
         /// </summary>
         /// <param name="carId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task DeleteReservationByCarId(int carId)
+        public async Task DeleteRentalByCarId(int carId)
         {
-            var reservation = await _context.Reservations
+            var rental = await _context.Rentals
                .Where(r => r.CarId == carId)
                .FirstOrDefaultAsync();
-            if (reservation == null)
-                throw new Exception("Can't find your reservation!");
+            if (rental == null)
+                throw new Exception("Can't find your rental!");
 
-            _context.Reservations.Remove(reservation);
+            _context.Rentals.Remove(rental);
             await SaveDatabase();
         }
 
         /// <summary>
-        /// Delete reservation by id
+        /// Delete rental by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task DeleteReservationById(int id)
+        public async Task DeleteRentalById(int id)
         {
-            var reservation = await GetReservationById(id);
-            if (reservation == null)
+            var rental = await GetRentalById(id);
+            if (rental == null)
                 throw new Exception("Can't find your reservation!");
 
-            _context.Reservations.Remove(reservation);
+            _context.Rentals.Remove(rental);
             await SaveDatabase();
         }
 
         /// <summary>
-        /// Get reservation by car id
+        /// Get rental by car id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Reservation> GetReservationByCarId(int id)
+        public async Task<Rental> GetRentalByCarId(int id)
         {
-            var reservation = await _context.Reservations
+            var rental = await _context.Rentals
                 .Where(r => r.CarId == id)
                 .Include(r => r.Car)
                 .FirstOrDefaultAsync();
 
-            if (reservation == null)
-                throw new Exception("Reservation not found");
+            if (rental == null)
+                throw new Exception("Rental not found");
 
-            return reservation;
+            return rental;
         }
 
         /// <summary>
-        /// Get reservation by id
+        /// Get rental by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Reservation> GetReservationById(int id)
+        public async Task<Rental> GetRentalById(int id)
         {
-            var reservation = await _context.Reservations
+            var rental = await _context.Rentals
               .Include(r => r.Car)
               .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (reservation == null)
-                throw new Exception("Reservation not found");
+            if (rental == null)
+                throw new Exception("Rental not found");
 
-            return reservation;
+            return rental;
         }
 
         /// <summary>
-        /// Get a list of all reservations
+        /// Get a list of all rentals
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Reservation>> GetReservations()
+        public async Task<IEnumerable<Rental>> GetRentals()
         {
-            return await _context.Reservations
+            return await _context.Rentals
                 .Include(r => r.Car)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Checks if reservation exists in database
+        /// Checks if rental exists in database
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public bool ReservationExists(int id)
+        public bool RentalExists(int id)
         {
-            return _context.Reservations.Any(e => e.Id == id);
+            return _context.Rentals.Any(e => e.Id == id);
         }
 
         /// <summary>
@@ -158,22 +156,22 @@ namespace RentalCarsApi.Services.ReservationServices
                 throw new Exception("Could not save data to database!");
             }
         }
-     
+
         /// <summary>
-        /// Updates a reservation
+        /// Updates a rental
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="reservation"></param>
+        /// <param name="rental"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task UpdateReservation(int id, Reservation reservation)
+        public async Task UpdateRental(int id, Rental rental)
         {
-            if (id != reservation.Id)
+            if (id != rental.Id)
                 throw new Exception("Identifier from endpoint doesn't match body id!");
-            if(!ReservationExists(id))
-                throw new Exception("Reservation doesn't exist in the database!");
+            if (!RentalExists(id))
+                throw new Exception("Rental doesn't exist in the database!");
 
-            _context.Entry(reservation).State = EntityState.Modified;
+            _context.Entry(rental).State = EntityState.Modified;
             await SaveDatabase();
         }
     }

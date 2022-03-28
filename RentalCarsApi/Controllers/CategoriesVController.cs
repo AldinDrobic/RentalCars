@@ -26,7 +26,7 @@ namespace RentalCarsApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryReadDTO>>> GetCategories()
         {
-            return _mapper.Map<List<CategoryReadDTO>>(await _categoryService.GetCategories());
+            return Ok(_mapper.Map<List<CategoryReadDTO>>(await _categoryService.GetCategories()));
         }
 
         /// <summary>
