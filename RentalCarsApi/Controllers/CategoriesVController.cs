@@ -77,11 +77,11 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Update a specific category by id
         /// </summary>
-        /// <param name="id">Car objects identifier</param>
-        /// <param name="dtoCategory">Car dto object that arrives from body</param>
+        /// <param name="id">Category objects identifier</param>
+        /// <param name="dtoCategory">Category dto object that arrives from body</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdUpdateCategory(int id, CategoryEditDTO dtoCategory)
+        public async Task<ActionResult> UpdateCategory(int id, CategoryEditDTO dtoCategory)
         {
             Category domainCategory = _mapper.Map<Category>(dtoCategory);
             await _categoryService.UpdateCategory(id, domainCategory);

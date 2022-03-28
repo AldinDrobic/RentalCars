@@ -2,28 +2,28 @@
 using RentalCarsApi.Data;
 using RentalCarsApi.Models;
 
-namespace RentalCarsApi.Services.CategoryServices
+namespace RentalCarsApi.Services.PriceServices
 {
-    public class CategoryService : ICategoryService
+    public class PriceService : IPriceService
     {
         private readonly RentalCarsDbContext _context;
 
-        public CategoryService(RentalCarsDbContext context)
+        public PriceService(RentalCarsDbContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Add category to database
+        /// Add price to database
         /// </summary>
-        /// <param name="category"></param>
+        /// <param name="price"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task AddCategoryToDatabase(Category category)
+        public async Task AddPriceToDatabase(Price price)
         {
             try
             {
-                await _context.Categories.AddAsync(category);
+                await _context.Prices.AddAsync(price);
                 await SaveDatabase();
             }
             catch (Exception)
@@ -33,73 +33,73 @@ namespace RentalCarsApi.Services.CategoryServices
         }
 
         /// <summary>
-        /// Return bool based on if category exists or not
+        /// Create new price
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
-
-        /// <summary>
-        /// Create new category
-        /// </summary>
-        /// <param name="category"></param>
+        /// <param name="price"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Category> CreateCategory(Category category)
+        public async Task<Price> CreatePrice(Price price)
         {
-            if (category == null)
-                throw new Exception("You need to specify the category details!");
+            if (price == null)
+                throw new Exception("You need to specify the price details!");
 
-            await AddCategoryToDatabase(category);
+            await AddPriceToDatabase(price);
             await SaveDatabase();
 
-            return category;
+            return price;
         }
 
         /// <summary>
-        /// Delete a category
+        /// Delete a price
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task DeleteCategory(int id)
+        public async Task DeletePrice(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var price = await _context.Prices.FindAsync(id);
 
-            if (category == null)
-                throw new Exception("Category not found");
+            if (price == null)
+                throw new Exception("Price not found");
 
-            _context.Categories.Remove(category);
+            _context.Prices.Remove(price);
             await SaveDatabase();
         }
 
         /// <summary>
-        /// Get a list of categories
+        /// Get a specific price by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<Price> GetPrice(int id)
+        {
+            var price = await _context.Prices.FindAsync(id);
+
+            if (price == null)
+                throw new Exception("Price not found");
+
+            return price;
+        }
+
+        /// <summary>
+        /// Get a list of all prices
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Category>> GetCategories()
+        public async Task<IEnumerable<Price>> GetPrices()
         {
-            return await _context.Categories
+            return await _context.Prices
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Get a specific category by id
+        /// Return bool based on if price exists or not
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<Category> GetCategory(int id)
+        public bool PriceExists(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-
-            if (category == null)
-                throw new Exception("Price not found");
-
-            return category;
+            return _context.Prices.Any(e => e.Id == id);
         }
 
         /// <summary>
@@ -120,18 +120,18 @@ namespace RentalCarsApi.Services.CategoryServices
         }
 
         /// <summary>
-        /// Update a category
+        /// Update a price
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="category"></param>
+        /// <param name="price"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task UpdateCategory(int id, Category category)
+        public async Task UpdatePrice(int id, Price price)
         {
-            if (id != category.Id)
+            if (id != price.Id)
                 throw new Exception("Identifier from endpoint doesn't match body id!");
 
-            _context.Entry(category).State = EntityState.Modified;
+            _context.Entry(price).State = EntityState.Modified;
             await SaveDatabase();
         }
     }

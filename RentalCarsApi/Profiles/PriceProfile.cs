@@ -13,6 +13,9 @@ namespace RentalCarsApi.Profiles
 
             CreateMap<Price, PriceReadDTO>()
                 .ReverseMap();
+
+            CreateMap<Price, PriceEditDTO>()
+                .ReverseMap();
         }
     }
 }
