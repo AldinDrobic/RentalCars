@@ -15,5 +15,14 @@ namespace RentalCarsApi.Data
         public RentalCarsDbContext([NotNullAttribute] DbContextOptions options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Category>().HasData(SeedHelper.GetCategories());
+            modelBuilder.Entity<Price>().HasData(SeedHelper.GetPrices());
+            modelBuilder.Entity<Car>().HasData(SeedHelper.GetCars());
+            modelBuilder.Entity<Reservation>().HasData(SeedHelper.GetReservations());
+            modelBuilder.Entity<Rental>().HasData(SeedHelper.GetRentals());
+        }
     }
 }
