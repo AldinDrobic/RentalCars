@@ -1,152 +1,136 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RentalCarsApi.Data;
 using RentalCarsApi.Models;
-using RentalCarsApi.Models.DTO.Car;
 using RentalCarsApi.Models.DTO.Rental;
-using RentalCarsApi.Services;
+using RentalCarsApi.Services.CarServices;
+using RentalCarsApi.Services.RentalServices;
 
 namespace RentalCarsApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class RentalsController: ControllerBase
+    [ApiController]
+    public class RentalsController : ControllerBase
     {
-        private readonly RentalCarsDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IRentalService _rentalService;
+        private readonly ICarService _carService;
 
-        public RentalsController(RentalCarsDbContext context, IMapper mapper)
+        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService)
         {
-            _context = context;
             _mapper = mapper;
+            _rentalService = rentalService;
+            _carService = carService;
         }
 
-   
-
-        ///// <summary>
-        ///// Get a list of all rentals
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<RentalReadDTO>>> GetRentals()
-        //{
-        //    var rentals = _mapper.Map<List<RentalReadDTO>>(await _context.Rentals
-        //        .Include(r => r.Car)
-        //        .ToListAsync());
-
-        //    return Ok(rentals);
-        //}
+        /// <summary>
+        /// Get a list of all rentals
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RentalReadDTO>>> GetRentals()
+        {
+            return Ok(_mapper.Map<List<RentalReadDTO>>(await _rentalService.GetRentals()));
+        }
 
         /// <summary>
-        /// Get specific reservation
+        /// Get specific rental by carId
+        /// </summary>
+        /// <param name="carId"></param>
+        /// <returns></returns>
+        [HttpGet("car/{carId}")]
+        public async Task<ActionResult<RentalReadDTO>> GetRentalByCarId(int carId)
+        {
+            return Ok((_mapper.Map<RentalReadDTO>(await _rentalService.GetRentalByCarId(carId))));
+        }
+
+        /// <summary>
+        /// Get specific rental by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Rental>> GetRental(int id)
+        public async Task<ActionResult<RentalReadDTO>> GetRentalById(int id)
         {
-            var rental = await _context.Rentals
-                .Include(r => r.Car)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (rental == null)
-                return NotFound();
-
-            return Ok(rental);
+            return Ok((_mapper.Map<RentalReadDTO>(await _rentalService.GetRentalById(id))));
         }
 
         /// <summary>
         /// Create new rental
         /// </summary>
-        /// <param name="dtoRental">Rental class that is used for creating new rental object</param>
+        /// <param name="dtoRental">rental>Rental class that is used for creating new rental object</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<RentalReadDTO>> CreateRental(RentalCreateDTO dtoRental)
         {
             if (dtoRental == null)
                 return BadRequest();
-            if (!CarExists(dtoRental.CarId))
+            if (!_carService.CarExists(dtoRental.CarId))
                 return NotFound();
 
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(dtoRental.CarId));
-            //If car is already rented
-            if (dtoCar.IsRented)
+            Car domainCar = _mapper.Map<Car>(await _carService.GetCar(dtoRental.CarId));
+            if (domainCar.IsRented)
                 return BadRequest();
 
-            dtoCar.IsRented = true;
+            await _carService.SetCarAvaiability(domainCar);
             Rental domainRental = _mapper.Map<Rental>(dtoRental);
 
-            try
-            {
-                await _context.Rentals.AddAsync(domainRental);
-                await _context.SaveChangesAsync();
+            await _rentalService.AddRentalToDatabase(domainRental);
+            await _carService.UpdateCar(dtoRental.CarId, domainCar);
 
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
-            return CreatedAtAction("GetReservation", new { id = domainRental.Id }, _mapper.Map<RentalReadDTO>(domainRental));
+            return CreatedAtAction("GetRentalById", new { id = domainRental.Id }, _mapper.Map<RentalReadDTO>(domainRental));
         }
 
-        [HttpDelete("{id}")]
+        /// <summary>
+        /// Deletes a rental from database by rental id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("rentalId/{id}")]
         public async Task<IActionResult> DeleteRentalById(int id)
         {
-            var rental = await _context.Rentals.FindAsync(id);
-            if (rental == null)
-                return NotFound();
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(rental.CarId));
-            dtoCar.IsRented = false;
-            _context.Rentals.Remove(rental);
+            //Set car status to available
+            Rental rental = await _rentalService.GetRentalById(id);
+            Car car = await _carService.GetCar(rental.CarId);
+            await _carService.SetCarAvaiability(car);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("car/{id}")]
-        public async Task<IActionResult> DeleteRentalByCarId(int carId)
-        {
-            var rental = await _context.Rentals
-                .Where(r => r.CarId == carId)
-                .FirstOrDefaultAsync();
-            if (rental == null)
-                return NotFound();
-
-            CarEditDTO dtoCar = _mapper.Map<CarEditDTO>(await _context.Cars.FindAsync(rental.CarId));
-            dtoCar.IsRented = false;
-            _context.Rentals.Remove(rental);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-
+            //Delete rental
+            await _rentalService.DeleteRentalById(id);
             return NoContent();
         }
 
         /// <summary>
-        /// Return bool based on if car exists or not
+        /// Deletes a rental from database by car id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool CarExists(int id)
+        [HttpDelete("carId/{id}")]
+        public async Task<IActionResult> DeleteRentalByCarId(int id)
         {
-            return _context.Cars.Any(e => e.Id == id);
+            //Set car status to available
+            Rental rental = await _rentalService.GetRentalByCarId(id);
+            Car car = await _carService.GetCar(rental.CarId);
+            await _carService.SetCarAvaiability(car);
+
+            //Delete rental
+            await _rentalService.DeleteRentalByCarId(id);
+            return NoContent();
         }
 
+        /// <summary>
+        /// Update a specific rental by id
+        /// </summary>
+        /// <param name="id">Rental objects identifier</param>
+        /// <param name="dtoRental">Rental dto object that arrives from body</param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateRental(int id, RentalEditDTO dtoRental)
+        {
+            Rental domainRental = _mapper.Map<Rental>(dtoRental);
+            await _rentalService.UpdateRental(id, domainRental);
+
+            return CreatedAtAction("CreateRental",
+                new { id = domainRental.Id },
+                _mapper.Map<RentalReadDTO>(domainRental));
+        }
     }
 }
