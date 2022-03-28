@@ -1,27 +1,22 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RentalCarsApi.Data;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Car;
+using RentalCarsApi.Services.CarServices;
 
 namespace RentalCarsApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class CarsController: ControllerBase
+    [ApiController]   
+    public class CarsController : ControllerBase
     {
-        private readonly RentalCarsDbContext _context;
         private readonly IMapper _mapper;
-        private readonly RentalsController _rentalsController;
-        private readonly ReservationsController _reservationsController;
+        private readonly ICarService _carService;
 
-        public CarsController(RentalCarsDbContext context, IMapper mapper, RentalsController rentalsController, ReservationsController reservationsController)
+        public CarsController(IMapper mapper,ICarService carService)
         {
-            _context = context;
             _mapper = mapper;
-            _rentalsController = rentalsController;
-            _reservationsController = reservationsController;
+            _carService = carService;
         }
 
         /// <summary>
@@ -31,11 +26,7 @@ namespace RentalCarsApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarReadDTO>>> GetCars()
         {
-            var cars = _mapper.Map<List<CarReadDTO>>(await _context.Cars
-                .Include(c => c.Category)
-                .ToListAsync());
-
-            return Ok(cars);
+            return Ok(_mapper.Map<List<CarReadDTO>>(await _carService.GetCars()));
         }
 
         /// <summary>
@@ -46,14 +37,7 @@ namespace RentalCarsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CarReadDTO>> GetCar(int id)
         {
-            var car = await _context.Cars
-                .Include(c => c.Category)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (car == null)
-                return NotFound();
-
-            return Ok(_mapper.Map<CarReadDTO>(car));
+            return Ok(_mapper.Map<CarReadDTO>(await _carService.GetCar(id)));
         }
 
         /// <summary>
@@ -64,19 +48,30 @@ namespace RentalCarsApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CarReadDTO>> CreateCar(CarCreateDTO dtoCar)
         {
-            if (dtoCar == null)
-            {
-                return BadRequest();
-            }
 
             Car domainCar = _mapper.Map<Car>(dtoCar);
+            
+            await _carService.CreateCar(domainCar);
 
-            await _context.Cars.AddAsync(domainCar);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCar", 
-                new {id = domainCar.Id}, 
+            return CreatedAtAction("GetCar",
+                new { id = domainCar.Id },
                 _mapper.Map<CarReadDTO>(domainCar));
+        }
+
+        /// <summary>
+        /// Deletes a car from database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCar(int id)
+        {
+            if(!_carService.CarExists(id))
+                return NotFound();
+
+            await _carService.DeleteCar(id);
+
+            return NoContent();
         }
 
         /// <summary>
@@ -88,55 +83,12 @@ namespace RentalCarsApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateCar(int id, CarEditDTO dtoCar)
         {
-            if(id != dtoCar.Id)
-                return BadRequest();
-
             Car domainCar = _mapper.Map<Car>(dtoCar);
-            _context.Entry(domainCar).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if(!CarExists(id))
-                    return NotFound();
-            }
+            await _carService.UpdateCar(id, domainCar);
 
             return CreatedAtAction("GetCar",
                 new { id = domainCar.Id },
                 _mapper.Map<CarReadDTO>(domainCar));
         }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCar(int id)
-        {
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
-                return NotFound();
-
-            //Delete car rental
-            await _rentalsController.DeleteRentalByCarId(car.Id);
-
-            //Delete car reservation
-            await _reservationsController.DeleteReservationByCarId(car.Id);
-
-            _context.Cars.Remove(car);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }       
-
-        /// <summary>
-        /// Return bool based on if car exists or not
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool CarExists(int id)
-        {
-            return _context.Cars.Any(e => e.Id == id);
-        }
-
     }
 }

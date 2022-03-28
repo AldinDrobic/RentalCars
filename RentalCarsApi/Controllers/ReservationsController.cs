@@ -15,13 +15,11 @@ namespace RentalCarsApi.Controllers
     {      
         private readonly RentalCarsDbContext _context;
         private readonly IMapper _mapper;
-        private readonly CarsController _carsController;
 
-        public ReservationsController(RentalCarsDbContext context, IMapper mapper, CarsController carsController)
+        public ReservationsController(RentalCarsDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _carsController = carsController;
         }
 
         /// <summary>
@@ -100,7 +98,6 @@ namespace RentalCarsApi.Controllers
             try
             {
                 await _context.Reservations.AddAsync(domainReservation);
-                await _carsController.UpdateCar(domainReservation.CarId, dtoCar);
                 await _context.SaveChangesAsync();
                 
             }
@@ -130,7 +127,6 @@ namespace RentalCarsApi.Controllers
 
             try
             {
-                await _carsController.UpdateCar(reservation.CarId, dtoCar);
                 await _context.SaveChangesAsync();             
             }
             catch (Exception)
@@ -160,7 +156,6 @@ namespace RentalCarsApi.Controllers
             _context.Reservations.Remove(reservation);
             try
             {
-                await _carsController.UpdateCar(reservation.CarId, dtoCar);
                 await _context.SaveChangesAsync();
 
             }
