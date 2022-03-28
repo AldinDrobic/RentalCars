@@ -1,23 +1,22 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RentalCarsApi.Data;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Price;
+using RentalCarsApi.Services.PriceServices;
 
 namespace RentalCarsApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class PricesController: ControllerBase
+    [ApiController]
+    public class PricesController : ControllerBase
     {
-        private readonly RentalCarsDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IPriceService _priceService;
 
-        public PricesController(RentalCarsDbContext context, IMapper mapper)
+        public PricesController(IMapper mapper, IPriceService priceService)
         {
-            _context = context;
             _mapper = mapper;
+            _priceService = priceService;
         }
 
         /// <summary>
@@ -25,11 +24,9 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<PriceReadDTO>>> GetPrices()
+        public async Task<ActionResult<IEnumerable<PriceReadDTO>>> GetPrices()
         {
-            var prices = _mapper.Map<List<PriceReadDTO>>(await _context.Prices.ToListAsync());
-
-            return Ok(prices);
+            return Ok(_mapper.Map<List<PriceReadDTO>>(await _priceService.GetPrices()));
         }
 
         /// <summary>
@@ -40,31 +37,58 @@ namespace RentalCarsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PriceReadDTO>> GetPrice(int id)
         {
-            var price = await _context.Prices.FindAsync(id);
-
-            if (price == null)
-                return BadRequest();
-
-            return Ok(_mapper.Map<PriceReadDTO>(price));
+            return Ok(_mapper.Map<PriceReadDTO>(await _priceService.GetPrice(id)));
         }
 
         /// <summary>
-        /// Create new price
+        /// Create new price 
         /// </summary>
         /// <param name="dtoPrice">Price class that is used for creating new price object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<PriceReadDTO>> CreatePrice(PriceCreateDTO dtoPrice)
+        public async Task<ActionResult<PriceReadDTO>> CreateCategory(PriceCreateDTO dtoPrice)
         {
-            if (dtoPrice == null)
-                return BadRequest();
+
             Price domainPrice = _mapper.Map<Price>(dtoPrice);
 
-            await _context.Prices.AddAsync(domainPrice);
-            await _context.SaveChangesAsync();
+            await _priceService.CreatePrice(domainPrice);
 
-            return CreatedAtAction("GetPrice", new {id = domainPrice.Id}, _mapper.Map<PriceReadDTO>(domainPrice));
+            return CreatedAtAction("GetPrice",
+                new { id = domainPrice.Id },
+                _mapper.Map<PriceReadDTO>(domainPrice));
+        }
+
+        /// <summary>
+        /// Deletes a price from database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePrice(int id)
+        {
+            if (!_priceService.PriceExists(id))
+                return NotFound();
+
+            await _priceService.DeletePrice(id);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Update a specific price by id
+        /// </summary>
+        /// <param name="id">Price objects identifier</param>
+        /// <param name="dtoPrice">Price dto object that arrives from body</param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateCategory(int id, PriceEditDTO dtoPrice)
+        {
+            Price domainPrice = _mapper.Map<Price>(dtoPrice);
+            await _priceService.UpdatePrice(id, domainPrice);
+
+            return CreatedAtAction("GetPrice",
+                new { id = domainPrice.Id },
+                _mapper.Map<PriceReadDTO>(domainPrice));
         }
     }
-
 }
