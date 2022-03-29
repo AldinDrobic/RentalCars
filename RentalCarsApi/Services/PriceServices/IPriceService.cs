@@ -12,5 +12,7 @@ namespace RentalCarsApi.Services.PriceServices
         public Task AddPriceToDatabase(Price price);
         public Task SaveDatabase();
         public bool PriceExists(int id);
+        public Task CalculatePrice(Rental rental);
+        
     }
 }

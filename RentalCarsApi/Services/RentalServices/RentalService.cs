@@ -32,6 +32,27 @@ namespace RentalCarsApi.Services.RentalServices
         }
 
         /// <summary>
+        /// Calculate the total days for the rent
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public int CalculateRentalDays(string startDate, string endDate)
+        {
+            var startDateToDate = DateTime.ParseExact(startDate, "yyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            var endDateToDate = DateTime.ParseExact(endDate, "yyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            var totalDays = (endDateToDate - startDateToDate).Days;
+
+            //If the total days are 0, then set it to one day 
+            if (totalDays == 0)
+            {
+                totalDays = 1;
+            }
+
+            return totalDays;
+        }
+
+        /// <summary>
         /// Creates a new rental and adds it to the database
         /// </summary>
         /// <param name="rental"></param>

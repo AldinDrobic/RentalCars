@@ -286,7 +286,7 @@ namespace RentalCarsApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RentalDays")
+                    b.Property<int>("TotalRentalDays")
                         .HasColumnType("int");
 
                     b.Property<double>("RentalPrice")

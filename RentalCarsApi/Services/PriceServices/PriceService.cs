@@ -33,6 +33,36 @@ namespace RentalCarsApi.Services.PriceServices
         }
 
         /// <summary>
+        /// Calculate rentals price
+        /// </summary>
+        /// <param name="rental"></param>
+        /// <returns></returns>
+        public async Task CalculatePrice(Rental rental)
+        {
+            var car = await _context.Cars.FindAsync(rental.CarId);
+            var price = await GetPrice(1);
+            var numberOfKilometers = 10;
+            
+
+            switch(car.CategoryId)
+            {
+                case 1: //Compact
+                    rental.RentalPrice = price.BaseDayRental * rental.TotalRentalDays;
+                    break;
+                case 2: //Premium
+                    rental.RentalPrice = price.BaseDayRental * rental.TotalRentalDays * 1.2 + price.KilometerPrice * numberOfKilometers;
+                    break;
+                case 3: //Minivan
+                    rental.RentalPrice = price.BaseDayRental * rental.TotalRentalDays * 1.7 + (price.KilometerPrice * numberOfKilometers * 1.5);
+                    break;
+
+                default:
+                    break;
+            }
+           
+        }
+
+        /// <summary>
         /// Create new price
         /// </summary>
         /// <param name="price"></param>

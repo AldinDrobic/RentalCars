@@ -54,7 +54,7 @@ namespace RentalCarsApi.Migrations
 
             migrationBuilder.InsertData(
                 table: "Rentals",
-                columns: new[] { "Id", "BookingNumber", "CarId", "CustomerBirth", "RentalDays", "RentalPrice", "TimeDateRental", "TimeDateReturn" },
+                columns: new[] { "Id", "BookingNumber", "CarId", "CustomerBirth", "TotalRentalDays", "RentalPrice", "TimeDateRental", "TimeDateReturn" },
                 values: new object[,]
                 {
                     { 1, 1000, 1, "1984-07-04-1111", 1, 1000.0, "220401", "220401" },

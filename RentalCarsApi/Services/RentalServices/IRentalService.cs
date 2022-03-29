@@ -12,5 +12,6 @@
         public Task AddRentalToDatabase(Rental rental);
         public Task SaveDatabase();
         public bool RentalExists(int id);
+        public int CalculateRentalDays(string startDate, string endDate);
     }
 }

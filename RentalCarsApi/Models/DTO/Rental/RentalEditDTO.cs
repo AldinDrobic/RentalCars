@@ -9,6 +9,8 @@
         public string CustomerBirth { get; set; }
         public string TimeDateRental { get; set; }
         public string TimeDateReturn { get; set; }
+        public int StartCarMilage { get; set; }
+        public int EndCarMilage { get; set; }
         public int CarId { get; set; }
     }
 }

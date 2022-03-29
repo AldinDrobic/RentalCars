@@ -71,8 +71,15 @@ namespace RentalCarsApi.Controllers
             if (domainCar.IsRented)
                 return BadRequest();
 
+            //Set cars availability to not available
             await _carService.SetCarAvaiability(domainCar);
             Rental domainRental = _mapper.Map<Rental>(dtoRental);
+
+            //Calculate total days of rental
+            domainRental.TotalRentalDays = _rentalService.CalculateRentalDays(dtoRental.TimeDateRental, dtoRental.TimeDateReturn);
+
+            //Set current milage 
+            domainRental.StartCarMilage = domainCar.Milage;
 
             await _rentalService.AddRentalToDatabase(domainRental);
             await _carService.UpdateCar(dtoRental.CarId, domainCar);
