@@ -23,6 +23,12 @@ namespace RentalCarsApi.Data
             modelBuilder.Entity<Car>().HasData(SeedHelper.GetCars());
             modelBuilder.Entity<Reservation>().HasData(SeedHelper.GetReservations());
             modelBuilder.Entity<Rental>().HasData(SeedHelper.GetRentals());
+
+            modelBuilder.HasSequence<int>("ReservationNumber").StartsAt(1000).IncrementsBy(1);
+            modelBuilder.Entity<Reservation>().Property(r => r.ReservationNumber).HasDefaultValueSql("NEXT VALUE FOR ReservationNumber");
+
+            modelBuilder.HasSequence<int>("BookingNumber").StartsAt(1000).IncrementsBy(1);
+            modelBuilder.Entity<Rental>().Property(r => r.BookingNumber).HasDefaultValueSql("NEXT VALUE FOR BookingNumber");
         }
     }
 }

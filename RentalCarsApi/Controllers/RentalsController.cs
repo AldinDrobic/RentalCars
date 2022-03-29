@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Rental;
 using RentalCarsApi.Services.CarServices;
+using RentalCarsApi.Services.PriceServices;
 using RentalCarsApi.Services.RentalServices;
 
 namespace RentalCarsApi.Controllers
@@ -14,12 +15,14 @@ namespace RentalCarsApi.Controllers
         private readonly IMapper _mapper;
         private readonly IRentalService _rentalService;
         private readonly ICarService _carService;
+        private readonly IPriceService _priceService;
 
-        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService)
+        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService, IPriceService priceService)
         {
             _mapper = mapper;
             _rentalService = rentalService;
             _carService = carService;
+            _priceService = priceService;
         }
 
         /// <summary>
@@ -133,6 +136,34 @@ namespace RentalCarsApi.Controllers
         public async Task<ActionResult> UpdateRental(int id, RentalEditDTO dtoRental)
         {
             Rental domainRental = _mapper.Map<Rental>(dtoRental);
+            await _rentalService.UpdateRental(id, domainRental);
+
+            return CreatedAtAction("CreateRental",
+                new { id = domainRental.Id },
+                _mapper.Map<RentalReadDTO>(domainRental));
+        }
+
+        [HttpPut("endrental/{id}")]
+        /// <summary>
+        /// End rental by calculate car milage, price and set car to available for renting
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dtoRental"></param>
+        /// <returns></returns>
+        public async Task<ActionResult<RentalReadDTO>> EndRental(int id, RentalEndDTO dtoRental)
+        {
+            Rental domainRental = _mapper.Map<Rental>(dtoRental);
+
+            //Calculate car milage 
+            domainRental.NumberOfKilometers = domainRental.EndCarMilage - domainRental.StartCarMilage;
+
+            //Set car to available
+            await _carService.SetCarAvaiability(await _carService.GetCar(domainRental.CarId));
+
+            //Calculate price
+            domainRental.RentalPrice = await _priceService.CalculatePrice(domainRental);
+
+            //Update rental to database
             await _rentalService.UpdateRental(id, domainRental);
 
             return CreatedAtAction("CreateRental",

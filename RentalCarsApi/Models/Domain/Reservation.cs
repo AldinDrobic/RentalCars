@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RentalCarsApi.Models
 {
@@ -9,6 +10,7 @@ namespace RentalCarsApi.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReservationNumber { get; set; }
         [Required]
         [RegularExpression(@"\d{4}-\d{2}-\d{2}-\d{4}",

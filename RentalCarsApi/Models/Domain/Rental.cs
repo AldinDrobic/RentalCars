@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using RentalCarsApi.Models;
 
@@ -10,9 +11,10 @@ namespace RentalCarsApi
         [Key]
         public int Id { get; set; }
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BookingNumber { get; set; }
-        public double RentalPrice { get; set; }
-        public int TotalRentalDays { get; set; }
+        public double? RentalPrice { get; set; }
+        public int? TotalRentalDays { get; set; }
         [Required]
         [RegularExpression(@"\d{4}-\d{2}-\d{2}-\d{4}",
             ErrorMessage = "Incorrect pattern, try using YYYY-MM-DD-XXXX")]
@@ -25,7 +27,8 @@ namespace RentalCarsApi
             ErrorMessage = "Wrong format for date, use YYMMDD instead ")]
         public string TimeDateReturn { get; set; }
         public int StartCarMilage { get; set; }
-        public int EndCarMilage { get; set; }
+        public int? EndCarMilage { get; set; }
+        public int? NumberOfKilometers { get; set; }
         public int CarId { get; set; }
         public Car Car { get; set; }
     }
