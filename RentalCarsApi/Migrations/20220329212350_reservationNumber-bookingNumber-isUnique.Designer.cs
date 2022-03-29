@@ -12,7 +12,7 @@ using RentalCarsApi.Data;
 namespace RentalCarsApi.Migrations
 {
     [DbContext(typeof(RentalCarsDbContext))]
-    [Migration("20220329211833_reservationNumber-bookingNumber-isUnique")]
+    [Migration("20220329212350_reservationNumber-bookingNumber-isUnique")]
     partial class reservationNumberbookingNumberisUnique
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

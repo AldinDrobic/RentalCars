@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int BookingNumber { get; set; }
         public double RentalPrice { get; set; }
-        public int RentalDays { get; set; }
+        public int TotalRentalDays { get; set; }
         public string CustomerBirth { get; set; }
         public string TimeDateRental { get; set; }
         public string TimeDateReturn { get; set; }
