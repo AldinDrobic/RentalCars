@@ -43,9 +43,9 @@ namespace RentalCarsApi.Data
         {
             return new List<Reservation>()
             {
-                new Reservation(){ Id = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 1},
-                new Reservation(){ Id = 2, CustomerBirth = "1974-08-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 4},
-                new Reservation(){ Id = 3, CustomerBirth = "1964-09-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 6}
+                new Reservation(){ Id = 1, ReservationNumber = 1000, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 1},
+                new Reservation(){ Id = 2, ReservationNumber = 1001, CustomerBirth = "1974-08-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 4},
+                new Reservation(){ Id = 3, ReservationNumber = 1002, CustomerBirth = "1964-09-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 6}
 
             };
         }
@@ -54,9 +54,9 @@ namespace RentalCarsApi.Data
         {
             return new List<Rental>()
             {
-                new Rental(){ Id = 1, TotalRentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 2},
-                new Rental(){ Id = 2, TotalRentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 5},
-                new Rental(){ Id = 3, TotalRentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 8}
+                new Rental(){ Id = 1, BookingNumber = 1000, TotalRentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 2},
+                new Rental(){ Id = 2, BookingNumber = 1001, TotalRentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 5},
+                new Rental(){ Id = 3, BookingNumber = 1002, TotalRentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 8}
             };
         }
 
