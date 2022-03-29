@@ -26,14 +26,14 @@ namespace RentalCarsApi.Data
         {
             return new List<Car>()
             {
-                new Car(){ Id = 1, Name = "Opel Astra", Milage = 156000, IsRented = false, CategoryId = 1 },
-                new Car(){ Id = 2, Name = "Volvo V70", Milage = 230526, IsRented = false, CategoryId = 1 },
-                new Car(){ Id = 3, Name = "Opel V90", Milage = 122000, IsRented = false, CategoryId = 1 },
-                new Car(){ Id = 4, Name = "Opel XC90", Milage = 172340, IsRented = false, CategoryId = 2 },
-                new Car(){ Id = 5, Name = "Opel XC60", Milage = 154794, IsRented = false, CategoryId = 1 },
-                new Car(){ Id = 6, Name = "Opel XC40", Milage = 254786, IsRented = false, CategoryId = 3 },
+                new Car(){ Id = 1, Name = "Opel Astra", Milage = 156000, IsRented = true, CategoryId = 1 },
+                new Car(){ Id = 2, Name = "Volvo V70", Milage = 230526, IsRented = true, CategoryId = 1 },
+                new Car(){ Id = 3, Name = "Volvo V90", Milage = 122000, IsRented = false, CategoryId = 1 },
+                new Car(){ Id = 4, Name = "Volvo XC90", Milage = 172340, IsRented = true, CategoryId = 2 },
+                new Car(){ Id = 5, Name = "Volvo XC60", Milage = 154794, IsRented = true, CategoryId = 1 },
+                new Car(){ Id = 6, Name = "Volvo XC40", Milage = 254786, IsRented = true, CategoryId = 3 },
                 new Car(){ Id = 7, Name = "Chrysler Pacifica", Milage = 204413, IsRented = false, CategoryId = 3 },
-                new Car(){ Id = 8, Name = "Ferrari Enzo", Milage = 11445, IsRented = false, CategoryId = 2 },
+                new Car(){ Id = 8, Name = "Ferrari Enzo", Milage = 11445, IsRented = true, CategoryId = 2 },
                 new Car(){ Id = 9, Name = "Lamborghini Aventador", Milage = 10224, IsRented = false, CategoryId = 2 },
                 new Car(){ Id = 10, Name = "Opel Meriva", Milage = 12000, IsRented = false, CategoryId = 3 }
             };
@@ -54,9 +54,9 @@ namespace RentalCarsApi.Data
         {
             return new List<Rental>()
             {
-                new Rental(){ Id = 1, BookingNumber = 1000, RentalPrice = 1000, RentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 1},
-                new Rental(){ Id = 2, BookingNumber = 2000, RentalPrice = 2000, RentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 4},
-                new Rental(){ Id = 3, BookingNumber = 3000, RentalPrice = 3000, RentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 6}
+                new Rental(){ Id = 1, BookingNumber = 1000, RentalPrice = 1000, RentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 2},
+                new Rental(){ Id = 2, BookingNumber = 2000, RentalPrice = 2000, RentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 5},
+                new Rental(){ Id = 3, BookingNumber = 3000, RentalPrice = 3000, RentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 8}
             };
         }
 

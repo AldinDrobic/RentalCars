@@ -18,6 +18,10 @@ namespace RentalCarsApi.Controllers
             _mapper = mapper;
             _priceService = priceService;
         }
+        public PricesController(IPriceService priceService)
+        {
+            _priceService = priceService;
+        }
 
         /// <summary>
         /// Get a list of all prices
