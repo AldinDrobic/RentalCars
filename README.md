@@ -5,7 +5,7 @@ API using .Net 6
 
 ## Install
 
-    Fork this repo and build solution in Visual Studio targeting .NET 6 
+    Fork this repo and build solution in Visual Studio 2022 targeting .NET 6 
 
 ## Run the app
 
