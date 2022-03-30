@@ -25,13 +25,8 @@ namespace WebApiTests
         {
 
             //Arrange
-            var priceService = new Mock<IPriceService>();
-            priceService.Setup(_ => _.GetPrices()).ReturnsAsync(PriceMockData.GetPrices());
-            var sut = new PricesController(priceService.Object);
-
-
+            
             //Act
-            //var result = (ObjectResult)await sut.GetPrices();
 
             //Assert
 

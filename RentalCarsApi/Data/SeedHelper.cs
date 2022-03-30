@@ -54,9 +54,9 @@ namespace RentalCarsApi.Data
         {
             return new List<Rental>()
             {
-                new Rental(){ Id = 1, BookingNumber = 1000, TotalRentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", CarId = 2},
-                new Rental(){ Id = 2, BookingNumber = 1001, TotalRentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", CarId = 5},
-                new Rental(){ Id = 3, BookingNumber = 1002, TotalRentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", CarId = 8}
+                new Rental(){ Id = 1, BookingNumber = 1000, TotalRentalDays = 1, CustomerBirth = "1984-07-04-1111", TimeDateRental = "220401", TimeDateReturn = "220401", StartCarMilage= 230526, CarId = 2},
+                new Rental(){ Id = 2, BookingNumber = 1001, TotalRentalDays = 1, CustomerBirth = "1974-07-04-1112", TimeDateRental = "220402", TimeDateReturn = "220402", StartCarMilage= 154794, CarId = 5},
+                new Rental(){ Id = 3, BookingNumber = 1002, TotalRentalDays = 1, CustomerBirth = "1964-07-04-1113", TimeDateRental = "220403", TimeDateReturn = "220403", StartCarMilage= 11445, CarId = 8}
             };
         }
 

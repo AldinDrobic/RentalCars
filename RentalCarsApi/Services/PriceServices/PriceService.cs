@@ -39,21 +39,23 @@ namespace RentalCarsApi.Services.PriceServices
         /// <returns></returns>
         public async Task<double> CalculatePrice(Rental rental)
         {
-            var car = await _context.Cars.FindAsync(rental.CarId);
+            Car car = await _context.Cars.FindAsync(rental.CarId);
+            if (car == null)
+                throw new Exception("Car is null");
             //Get the standard price
             var price = await GetPrice(1);
-            double rentalPrice = 0;
+            double rentalPrice = 0.0;
 
             switch(car.CategoryId)
             {
                 case 1: //Compact
-                    rentalPrice = (double)(price.BaseDayRental * rental.TotalRentalDays);
+                    rentalPrice = Convert.ToDouble(price.BaseDayRental * rental.TotalRentalDays);
                     break;
                 case 2: //Premium
-                    rentalPrice = (double)(price.BaseDayRental * rental.TotalRentalDays * 1.2 + price.KilometerPrice * rental.NumberOfKilometers);
+                    rentalPrice = Convert.ToDouble(price.BaseDayRental * rental.TotalRentalDays * 1.2 + price.KilometerPrice * rental.NumberOfKilometers); 
                     break;
                 case 3: //Minivan
-                    rentalPrice = (double)(price.BaseDayRental * rental.TotalRentalDays * 1.7 + (price.KilometerPrice * rental.NumberOfKilometers * 1.5));
+                    rentalPrice = Convert.ToDouble(price.BaseDayRental * rental.TotalRentalDays * 1.7 + (price.KilometerPrice * rental.NumberOfKilometers * 1.5)); 
                     break;
 
                 default:

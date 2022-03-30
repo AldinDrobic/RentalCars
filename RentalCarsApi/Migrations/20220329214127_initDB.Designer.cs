@@ -12,8 +12,8 @@ using RentalCarsApi.Data;
 namespace RentalCarsApi.Migrations
 {
     [DbContext(typeof(RentalCarsDbContext))]
-    [Migration("20220329212350_reservationNumber-bookingNumber-isUnique")]
-    partial class reservationNumberbookingNumberisUnique
+    [Migration("20220329214127_initDB")]
+    partial class initDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -335,7 +335,7 @@ namespace RentalCarsApi.Migrations
                             BookingNumber = 1000,
                             CarId = 2,
                             CustomerBirth = "1984-07-04-1111",
-                            StartCarMilage = 0,
+                            StartCarMilage = 230526,
                             TimeDateRental = "220401",
                             TimeDateReturn = "220401",
                             TotalRentalDays = 1
@@ -346,7 +346,7 @@ namespace RentalCarsApi.Migrations
                             BookingNumber = 1001,
                             CarId = 5,
                             CustomerBirth = "1974-07-04-1112",
-                            StartCarMilage = 0,
+                            StartCarMilage = 154794,
                             TimeDateRental = "220402",
                             TimeDateReturn = "220402",
                             TotalRentalDays = 1
@@ -357,7 +357,7 @@ namespace RentalCarsApi.Migrations
                             BookingNumber = 1002,
                             CarId = 8,
                             CustomerBirth = "1964-07-04-1113",
-                            StartCarMilage = 0,
+                            StartCarMilage = 11445,
                             TimeDateRental = "220403",
                             TimeDateReturn = "220403",
                             TotalRentalDays = 1

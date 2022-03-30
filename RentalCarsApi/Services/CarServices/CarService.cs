@@ -90,7 +90,7 @@ namespace RentalCarsApi.Services
         /// </summary>
         /// <param name="car"></param>
         /// <returns></returns>
-        public async Task SetCarAvaiability(Car car)
+        public async Task SetCarAvailability(Car car)
         {
             if(car.IsRented)
                 car.IsRented = false;

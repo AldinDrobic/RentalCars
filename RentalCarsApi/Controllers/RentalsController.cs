@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using RentalCarsApi.Data;
 using RentalCarsApi.Models;
 using RentalCarsApi.Models.DTO.Rental;
 using RentalCarsApi.Services.CarServices;
@@ -16,13 +17,15 @@ namespace RentalCarsApi.Controllers
         private readonly IRentalService _rentalService;
         private readonly ICarService _carService;
         private readonly IPriceService _priceService;
+        private readonly RentalCarsDbContext _rentalCarsDbContext;
 
-        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService, IPriceService priceService)
+        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService, IPriceService priceService, RentalCarsDbContext rentalCarsDbContext)
         {
             _mapper = mapper;
             _rentalService = rentalService;
             _carService = carService;
             _priceService = priceService;
+            _rentalCarsDbContext = rentalCarsDbContext;
         }
 
         /// <summary>
@@ -60,32 +63,31 @@ namespace RentalCarsApi.Controllers
         /// <summary>
         /// Create new rental
         /// </summary>
-        /// <param name="dtoRental">rental>Rental class that is used for creating new rental object</param>
+        /// <param name="dtoRental">Rental class that is used for creating new rental object</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<RentalReadDTO>> CreateRental(RentalCreateDTO dtoRental)
         {
             if (dtoRental == null)
-                return BadRequest();
+                return BadRequest("Object is null");
             if (!_carService.CarExists(dtoRental.CarId))
-                return NotFound();
+                return NotFound("This car doesn't exist in our DB!");
 
             Car domainCar = _mapper.Map<Car>(await _carService.GetCar(dtoRental.CarId));
             if (domainCar.IsRented)
-                return BadRequest();
-
-            //Set cars availability to not available
-            await _carService.SetCarAvaiability(domainCar);
+                return BadRequest("Car is rented");
+           
             Rental domainRental = _mapper.Map<Rental>(dtoRental);
-
             //Calculate total days of rental
             domainRental.TotalRentalDays = _rentalService.CalculateRentalDays(dtoRental.TimeDateRental, dtoRental.TimeDateReturn);
-
             //Set current milage 
             domainRental.StartCarMilage = domainCar.Milage;
 
+            //await _rentalCarsDbContext.Rentals.AddAsync(domainRental);
+            //await _rentalCarsDbContext.SaveChangesAsync();
             await _rentalService.AddRentalToDatabase(domainRental);
-            await _carService.UpdateCar(dtoRental.CarId, domainCar);
+            //Set car's availability to not available
+            await _carService.SetCarAvailability(domainCar);
 
             return CreatedAtAction("GetRentalById", new { id = domainRental.Id }, _mapper.Map<RentalReadDTO>(domainRental));
         }
@@ -101,11 +103,11 @@ namespace RentalCarsApi.Controllers
             //Set car status to available
             Rental rental = await _rentalService.GetRentalById(id);
             Car car = await _carService.GetCar(rental.CarId);
-            await _carService.SetCarAvaiability(car);
+            await _carService.SetCarAvailability(car);
 
             //Delete rental
             await _rentalService.DeleteRentalById(id);
-            return NoContent();
+            return Ok("You successfully deleted the rental!");
         }
 
         /// <summary>
@@ -119,11 +121,11 @@ namespace RentalCarsApi.Controllers
             //Set car status to available
             Rental rental = await _rentalService.GetRentalByCarId(id);
             Car car = await _carService.GetCar(rental.CarId);
-            await _carService.SetCarAvaiability(car);
+            await _carService.SetCarAvailability(car);
 
             //Delete rental
             await _rentalService.DeleteRentalByCarId(id);
-            return NoContent();
+            return Ok("You successfully deleted the rental!");
         }
 
         /// <summary>
@@ -150,21 +152,20 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <param name="dtoRental"></param>
         /// <returns></returns>
-        public async Task<ActionResult<RentalReadDTO>> EndRental(int id, RentalEndDTO dtoRental)
+        public async Task<ActionResult<RentalReadDTO>> EndRental(int id, RentalEditDTO dtoRental)
         {
             Rental domainRental = _mapper.Map<Rental>(dtoRental);
 
             //Calculate car milage 
             domainRental.NumberOfKilometers = domainRental.EndCarMilage - domainRental.StartCarMilage;
 
-            //Set car to available
-            await _carService.SetCarAvaiability(await _carService.GetCar(domainRental.CarId));
-
             //Calculate price
             domainRental.RentalPrice = await _priceService.CalculatePrice(domainRental);
 
             //Update rental to database
             await _rentalService.UpdateRental(id, domainRental);
+            //Set car to available
+            await _carService.SetCarAvailability(await _carService.GetCar(domainRental.CarId));
 
             return CreatedAtAction("CreateRental",
                 new { id = domainRental.Id },

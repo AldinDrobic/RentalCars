@@ -72,7 +72,7 @@ namespace RentalCarsApi.Controllers
             if (domainCar.IsRented)
                 return BadRequest();
 
-            await _carService.SetCarAvaiability(domainCar);
+            await _carService.SetCarAvailability(domainCar);
             Reservation domainReservation = _mapper.Map<Reservation>(dtoReservation);
 
             await _reservationService.AddReservationToDatabase(domainReservation);
@@ -92,7 +92,7 @@ namespace RentalCarsApi.Controllers
             //Set car status to available
             Reservation reservation = await _reservationService.GetReservationById(id);
             Car car = await _carService.GetCar(reservation.CarId);
-            await _carService.SetCarAvaiability(car);
+            await _carService.SetCarAvailability(car);
 
             //Delete rental
             await _reservationService.DeleteReservationById(id);
@@ -110,7 +110,7 @@ namespace RentalCarsApi.Controllers
             //Set car status to available
             Reservation reservation = await _reservationService.GetReservationByCarId(id);
             Car car = await _carService.GetCar(reservation.CarId);
-            await _carService.SetCarAvaiability(car);
+            await _carService.SetCarAvailability(car);
 
             //Delete rental
             await _reservationService.DeleteReservationByCarId(id);

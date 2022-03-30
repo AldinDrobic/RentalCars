@@ -11,7 +11,7 @@ namespace RentalCarsApi.Services.CarServices
         public Task DeleteCar(int id);
         public Task AddCarToDatabase(Car car);
         public Task SaveDatabase();
-        public Task SetCarAvaiability(Car car);
+        public Task SetCarAvailability(Car car);
         public Task<bool> IsCarRented(int id);
         public bool CarExists(int id);
         
