@@ -9,7 +9,9 @@ API using .Net 6
 
 ## Run the app
 
-    Run i debug mode by ctrl + f5
+    Modify the connection string in appsettings.json to fit your database server
+    Run command "update-database" in the package manager console
+    Run the api in debug mode by pressing ctrl + F5
 
 # REST API
 
