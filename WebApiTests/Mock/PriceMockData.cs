@@ -1,4 +1,5 @@
 ﻿using RentalCarsApi.Models;
+using RentalCarsApi.Models.DTO.Price;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,17 @@ namespace WebApiTests.Mock
                 Name = "Standard",
                 BaseDayRental = 10,
                 KilometerPrice = 1
+            };
+        }
+
+        public static Price PostPrice()
+        {
+            return new Price()
+            {
+                Id = 0,
+                Name = "Exclusive",
+                BaseDayRental = 30,
+                KilometerPrice = 3
             };
         }
     }

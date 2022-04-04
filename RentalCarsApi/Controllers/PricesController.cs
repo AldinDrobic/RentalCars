@@ -49,10 +49,10 @@ namespace RentalCarsApi.Controllers
         /// <param name="dtoPrice">Price class that is used for creating new price object</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<PriceReadDTO>> CreateCategory(PriceCreateDTO dtoPrice)
+        public async Task<IActionResult> CreatePrice(PriceCreateDTO dtoPrice)
         {
 
-            Price domainPrice = _mapper.Map<Price>(dtoPrice);
+            var domainPrice = _mapper.Map<Price>(dtoPrice);
 
             await _priceService.CreatePrice(domainPrice);
 
