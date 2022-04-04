@@ -24,10 +24,13 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PriceReadDTO>>> GetPrices()
+        public async Task<IActionResult> GetPrices()
         {
-            return Ok(_mapper.Map<List<PriceReadDTO>>(await _priceService.GetPrices()));
+            var price = _mapper.Map<List<PriceReadDTO>>(await _priceService.GetPrices());
+            return Ok(price);
         }
+
+
 
         /// <summary>
         /// Get specific price by id
@@ -35,7 +38,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<PriceReadDTO>> GetPrice(int id)
+        public async Task<IActionResult> GetPrice(int id)
         {
             return Ok(_mapper.Map<PriceReadDTO>(await _priceService.GetPrice(id)));
         }
