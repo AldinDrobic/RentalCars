@@ -17,15 +17,13 @@ namespace RentalCarsApi.Controllers
         private readonly IRentalService _rentalService;
         private readonly ICarService _carService;
         private readonly IPriceService _priceService;
-        private readonly RentalCarsDbContext _rentalCarsDbContext;
 
-        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService, IPriceService priceService, RentalCarsDbContext rentalCarsDbContext)
+        public RentalsController(IMapper mapper, IRentalService rentalService, ICarService carService, IPriceService priceService)
         {
             _mapper = mapper;
             _rentalService = rentalService;
             _carService = carService;
             _priceService = priceService;
-            _rentalCarsDbContext = rentalCarsDbContext;
         }
 
         /// <summary>
@@ -33,7 +31,7 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RentalReadDTO>>> GetRentals()
+        public async Task<IActionResult> GetRentals()
         {
             return Ok(_mapper.Map<List<RentalReadDTO>>(await _rentalService.GetRentals()));
         }
@@ -44,7 +42,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="carId"></param>
         /// <returns></returns>
         [HttpGet("car/{carId}")]
-        public async Task<ActionResult<RentalReadDTO>> GetRentalByCarId(int carId)
+        public async Task<IActionResult> GetRentalByCarId(int carId)
         {
             return Ok((_mapper.Map<RentalReadDTO>(await _rentalService.GetRentalByCarId(carId))));
         }
@@ -55,7 +53,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<RentalReadDTO>> GetRentalById(int id)
+        public async Task<IActionResult> GetRentalById(int id)
         {
             return Ok((_mapper.Map<RentalReadDTO>(await _rentalService.GetRentalById(id))));
         }

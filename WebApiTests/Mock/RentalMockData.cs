@@ -9,7 +9,7 @@ namespace WebApiTests.Mock
 {
     public class RentalMockData
     {
-        public static List<Rental> GetRentalS()
+        public static List<Rental> GetRentals()
         {
             return new List<Rental>()
             {
