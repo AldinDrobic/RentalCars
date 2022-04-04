@@ -24,7 +24,7 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarReadDTO>>> GetCars()
+        public async Task<IActionResult> GetCars()
         {
             return Ok(_mapper.Map<List<CarReadDTO>>(await _carService.GetCars()));
         }
@@ -35,7 +35,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<CarReadDTO>> GetCar(int id)
+        public async Task<IActionResult> GetCar(int id)
         {
             return Ok(_mapper.Map<CarReadDTO>(await _carService.GetCar(id)));
         }

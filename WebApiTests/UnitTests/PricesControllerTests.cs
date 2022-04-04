@@ -52,16 +52,16 @@ namespace WebApiTests.UnitTests
         }
         #endregion
 
-        #region CreatePrice_ShouldCall_IPriceService_SaveAsync_AtleastOnce()
+        #region CreatePrice_ShouldCall_IPriceService_SaveAsync_AtleastOnce
         [Fact]
         public async Task CreatePrice_ShouldCall_IPriceService_SaveAsync_AtleastOnce()
         {
             // Arrange
             var priceService = new Mock<IPriceService>();
-            //auto mapper configuration
+            // Auto mapper configuration
             var mockMapper = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new PriceProfile()); //your automapperprofile 
+                cfg.AddProfile(new PriceProfile());
             });
             var mapper = mockMapper.CreateMapper();
             var price = PriceMockData.PostPrice();

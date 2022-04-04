@@ -28,7 +28,7 @@ namespace RentalCarsApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReservationReadDTO>>> GetReservations()
+        public async Task<IActionResult> GetReservations()
         {
             return Ok(_mapper.Map<List<ReservationReadDTO>>(await _reservationService.GetReservations()));
         }
@@ -39,7 +39,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="carId"></param>
         /// <returns></returns>
         [HttpGet("car/{carId}")]
-        public async Task<ActionResult<ReservationReadDTO>> GetReservationByCarId(int carId)
+        public async Task<IActionResult> GetReservationByCarId(int carId)
         {
             return Ok((_mapper.Map<ReservationReadDTO>(await _reservationService.GetReservationByCarId(carId))));
         }
@@ -50,7 +50,7 @@ namespace RentalCarsApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReservationReadDTO>> GetReservationById(int id)
+        public async Task<IActionResult> GetReservationById(int id)
         {
             return Ok((_mapper.Map<ReservationReadDTO>(await _reservationService.GetReservationById(id))));
         }
